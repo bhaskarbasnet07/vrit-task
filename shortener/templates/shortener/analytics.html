@@ -1,0 +1,116 @@
+{% extends 'shortener/base.html' %}
+
+{% block title %}Analytics - URL Shortener{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-graph-up"></i> Analytics</h2>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-lg">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<!-- URL Info Cards -->
+<div class="row mb-4 g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-link-45deg"></i> Short URL</h5>
+                <p class="card-text">
+                    <a href="{% url 'redirect_url' short_url.short_key %}" target="_blank" class="text-decoration-none fw-bold">
+                        {{ request.scheme }}://{{ request.get_host }}/{{ short_url.short_key }}
+                    </a>
+                    {% if short_url.custom_key %}
+                        <span class="badge bg-info ms-2">Custom</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-box-arrow-up-right"></i> Original URL</h5>
+                <p class="card-text text-truncate" title="{{ short_url.original_url }}">
+                    <a href="{{ short_url.original_url }}" target="_blank" class="text-decoration-none text-muted">
+                        {{ short_url.original_url }}
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4 g-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h3 class="text-primary">{{ total_clicks }}</h3>
+                <p class="text-muted mb-0">Total Clicks</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h3 class="text-info">{{ short_url.created_at|date:"M d, Y" }}</h3>
+                <p class="text-muted mb-0">Created</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                {% if short_url.expires_at %}
+                    {% if short_url.is_expired %}
+                        <h3 class="text-danger">Expired</h3>
+                    {% else %}
+                        <h3 class="text-success">{{ short_url.expires_at|date:"M d, Y" }}</h3>
+                    {% endif %}
+                {% else %}
+                    <h3 class="text-secondary">Never</h3>
+                {% endif %}
+                <p class="text-muted mb-0">Expires</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Clicks -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Clicks (Last 50)</h5>
+    </div>
+    {% if clicks %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>IP Address</th>
+                        <th>User Agent</th>
+                        <th>Referer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for click in clicks %}
+                        <tr>
+                            <td>{{ click.clicked_at|date:"M d, Y H:i:s" }}</td>
+                            <td>{{ click.ip_address|default:"N/A" }}</td>
+                            <td title="{{ click.user_agent }}">{{ click.user_agent|truncatechars:50|default:"N/A" }}</td>
+                            <td title="{{ click.referer }}">{{ click.referer|truncatechars:50|default:"Direct" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="card-body text-center py-5">
+            <i class="bi bi-inbox display-4 text-muted"></i>
+            <p class="text-muted mt-3">No clicks recorded yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

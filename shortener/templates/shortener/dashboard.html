@@ -1,0 +1,97 @@
+{% extends 'shortener/base.html' %}
+
+{% block title %}Dashboard - URL Shortener{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+    <a href="{% url 'create_url' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-circle"></i> Create New URL
+    </a>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <form method="get" action="{% url 'dashboard' %}">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg" name="search" placeholder="Search URLs..." value="{{ search_query }}">
+                <button class="btn btn-outline-secondary btn-lg" type="submit">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                {% if search_query %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-danger btn-lg">
+                        <i class="bi bi-x"></i> Clear
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- URLs Section -->
+{% if short_urls %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for url in short_urls %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'redirect_url' url.short_key %}" target="_blank" class="text-decoration-none text-dark">
+                                {{ request.scheme }}://{{ request.get_host }}/{{ url.short_key }}
+                            </a>
+                            {% if url.custom_key %}
+                                <span class="badge bg-info ms-1">Custom</span>
+                            {% endif %}
+                        </h5>
+                        <p class="card-text text-truncate" title="{{ url.original_url }}">
+                            <a href="{{ url.original_url }}" target="_blank" class="text-decoration-none text-muted">
+                                {{ url.original_url }}
+                            </a>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="badge bg-primary"><i class="bi bi-mouse2"></i> {{ url.click_count }} clicks</span>
+                            <small class="text-muted">
+                                {% if url.expires_at %}
+                                    {% if url.is_expired %}
+                                        <span class="text-danger">Expired</span>
+                                    {% else %}
+                                        Expires: {{ url.expires_at|date:"M d, Y" }}
+                                    {% endif %}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{% url 'analytics' url.pk %}" class="btn btn-outline-info btn-sm" title="Analytics">
+                                <i class="bi bi-graph-up"></i>
+                            </a>
+                            <a href="{% url 'qr_code' url.pk %}" class="btn btn-outline-secondary btn-sm" target="_blank" title="QR Code">
+                                <i class="bi bi-qr-code"></i>
+                            </a>
+                            <a href="{% url 'edit_url' url.pk %}" class="btn btn-outline-primary btn-sm" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'delete_url' url.pk %}" class="btn btn-outline-danger btn-sm" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card shadow-sm text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h4 class="mt-3">No URLs yet</h4>
+        <p class="text-muted">Start by creating your first short URL!</p>
+        <a href="{% url 'create_url' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> Create Your First URL
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
