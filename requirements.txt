@@ -30,6 +30,7 @@ pypng==0.20220715.0
 python-dateutil==2.9.0.post0
 pyzmq==27.1.0
 qrcode==7.4.2
+setuptools==80.10.2
 six==1.17.0
 sqlparse==0.5.5
 stack-data==0.6.3
@@ -38,4 +39,5 @@ traitlets==5.14.3
 typing_extensions==4.15.0
 tzdata==2025.3
 wcwidth==0.5.3
+wheel==0.46.3
 whitenoise==6.11.0
