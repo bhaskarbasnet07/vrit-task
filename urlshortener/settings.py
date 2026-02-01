@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-dev-key-change-in-production'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["vrit-task-1.onrender.com"]
 
 
 # Application definition
